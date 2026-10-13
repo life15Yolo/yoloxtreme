@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 4%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 7%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 73 100% 50%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 0% 14%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 55%;
+    --accent: 73 100% 50%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 16%;
+    --input: 0 0% 16%;
+    --ring: 73 100% 50%;
+    --radius: 1.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "ss01", "cv01";
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-weight: 900;
+    letter-spacing: -0.04em;
+  }
+
+  .text-lime {
+    color: hsl(73 100% 50%);
+  }
+
+  .bg-lime {
+    background-color: hsl(73 100% 50%);
+  }
+
+  .border-lime {
+    border-color: hsl(73 100% 50%);
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .brutalist-border {
+    border: 2px solid hsl(0 0% 98%);
+  }
+
+  .brutalist-border-lime {
+    border: 2px solid hsl(73 100% 50%);
+  }
+
+  .marquee {
+    animation: marquee 30s linear infinite;
+  }
+
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .glow-lime {
+    box-shadow: 0 0 20px hsl(73 100% 50% / 0.3);
+  }
+
+  .glow-lime-hover:hover {
+    box-shadow: 0 0 30px hsl(73 100% 50% / 0.5);
+  }
+}
