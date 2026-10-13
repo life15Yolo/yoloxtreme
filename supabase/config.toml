@@ -1,0 +1,8 @@
+[functions.create-subaccount]
+verify_jwt = false
+
+[functions.pay]
+verify_jwt = false
+
+[functions.paystack-webhook]
+verify_jwt = false
