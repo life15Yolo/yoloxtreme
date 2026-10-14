@@ -17,6 +17,7 @@ const archivo = Archivo({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://yoloxtreme.tech'),
   title: 'YOLOXTREME — The Preorder Factory',
   description:
     '100+ designers. No inventory risk. Preorder, produce, ship. The multi-designer preorder platform.',
