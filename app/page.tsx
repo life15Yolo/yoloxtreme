@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase/client';
+import { isSupabaseConfigured, supabase } from '@/lib/supabase/client';
 import type { DropWithDesigner } from '@/lib/types';
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
@@ -9,15 +9,17 @@ import Link from 'next/link';
 export const revalidate = 30;
 
 export default async function Home() {
-  const { data: drops } = await supabase
-    .from('drops')
-    .select(`
-      *,
-      designer:designers(*)
-    `)
-    .eq('status', 'live')
-    .order('created_at', { ascending: false })
-    .limit(50);
+  const { data: drops } = isSupabaseConfigured
+    ? await supabase
+        .from('drops')
+        .select(`
+          *,
+          designer:designers(*)
+        `)
+        .eq('status', 'live')
+        .order('created_at', { ascending: false })
+        .limit(50)
+    : { data: null };
 
   const liveDrops = (drops || []) as unknown as DropWithDesigner[];
 
