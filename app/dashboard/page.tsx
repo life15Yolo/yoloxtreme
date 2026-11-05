@@ -4,13 +4,13 @@ import Link from 'next/link';
 import { useAuth } from '@/components/auth-provider';
 import { supabase } from '@/lib/supabase/client';
 import { formatNaira } from '@/lib/utils';
-import { TrendingUp, Package, ShoppingCart, PlusCircle, ArrowRight } from 'lucide-react';
+import { TrendingUp, Package, ShoppingCart, Boxes, PlusCircle, ArrowRight } from 'lucide-react';
 
-type Stats = { totalRevenue: number; activeDrops: number; totalPreorders: number };
+type Stats = { totalRevenue: number; activeDrops: number; totalPreorders: number; totalDrops: number };
 
 export default function DashboardHome() {
   const { designer } = useAuth();
-  const [stats, setStats] = useState<Stats>({ totalRevenue: 0, activeDrops: 0, totalPreorders: 0 });
+  const [stats, setStats] = useState<Stats>({ totalRevenue: 0, activeDrops: 0, totalPreorders: 0, totalDrops: 0 });
   const [recentDrops, setRecentDrops] = useState<Array<{ id: string; title: string; status: string; current_qty: number; max_qty: number }>>([]);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
@@ -24,7 +24,7 @@ export default function DashboardHome() {
         totalPreorders = orders?.length || 0;
         totalRevenue = (orders || []).filter((o) => o.status === 'paid').reduce((sum, o) => sum + Number(o.amount), 0);
       }
-      setStats({ totalRevenue, activeDrops: (drops || []).filter((d) => d.status === 'live').length, totalPreorders });
+      setStats({ totalRevenue, activeDrops: (drops || []).filter((d) => d.status === 'live').length, totalPreorders, totalDrops: (drops || []).length });
       setRecentDrops((drops || []).slice(0, 5));
       setLoading(false);
     })();
@@ -34,10 +34,11 @@ export default function DashboardHome() {
     { label: 'Total Revenue', value: formatNaira(stats.totalRevenue), icon: TrendingUp, color: 'text-lime' },
     { label: 'Active Drops', value: String(stats.activeDrops), icon: Package, color: 'text-white' },
     { label: 'Total Preorders', value: String(stats.totalPreorders), icon: ShoppingCart, color: 'text-white' },
+    { label: 'Total Drops', value: String(stats.totalDrops), icon: Boxes, color: 'text-white' },
   ];
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {statCards.map((stat) => (<div key={stat.label} className="rounded-3xl border border-white/10 bg-card p-5"><div className="flex items-center justify-between mb-3"><stat.icon className={`h-5 w-5 ${stat.color}`} /></div><div className="font-display text-2xl font-black text-white">{stat.value}</div><div className="text-xs text-white/40 mt-1">{stat.label}</div></div>))}
       </div>
       <div className="rounded-3xl border border-lime/20 bg-gradient-to-br from-lime/10 to-card p-6">

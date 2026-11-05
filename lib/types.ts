@@ -40,6 +40,16 @@ export type Preorder = {
   created_at: string;
 };
 
+export type Feedback = {
+  id: string;
+  designer_id: string;
+  type: 'feature' | 'bug';
+  subject: string;
+  message: string;
+  status: 'open' | 'acknowledged' | 'resolved';
+  created_at: string;
+};
+
 export type RoomPost = {
   id: string;
   drop_id: string;
