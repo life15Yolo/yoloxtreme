@@ -11,6 +11,7 @@ type AuthContextType = {
   designer: Designer | null;
   loading: boolean;
   signOut: () => Promise<void>;
+  refreshDesigner: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -19,6 +20,7 @@ const AuthContext = createContext<AuthContextType>({
   designer: null,
   loading: true,
   signOut: async () => {},
+  refreshDesigner: async () => {},
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -60,8 +62,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setSession(null); setUser(null); setDesigner(null);
   };
 
+  const refreshDesigner = async () => {
+    if (!user) return;
+    const { data } = await supabase.from('designers').select('*').eq('id', user.id).maybeSingle();
+    setDesigner(data as Designer | null);
+  };
+
   return (
-    <AuthContext.Provider value={{ session, user, designer, loading, signOut }}>
+    <AuthContext.Provider value={{ session, user, designer, loading, signOut, refreshDesigner }}>
       {children}
     </AuthContext.Provider>
   );
