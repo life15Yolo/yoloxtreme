@@ -69,14 +69,15 @@ export default async function Home() {
               <span className="text-xs font-semibold text-lime">PREORDER FACTORY IS LIVE</span>
             </div>
 
-            <h1 className="font-display text-5xl sm:text-7xl md:text-8xl font-black tracking-tighter text-white animate-fade-in" style={{ animationDelay: '100ms' }}>
-              THE PREORDER<br />
-              <span className="text-lime">FACTORY.</span>
+            <p className="mb-4 text-xs font-bold uppercase tracking-[0.24em] text-white/40 animate-fade-in">Made in Africa. Worn everywhere.</p>
+            <h1 className="max-w-4xl font-display text-[3.75rem] leading-[0.88] sm:text-7xl md:text-8xl font-black tracking-tighter text-white animate-fade-in" style={{ animationDelay: '100ms' }}>
+              WEAR WHAT&apos;S<br />
+              <span className="text-lime">NEXT.</span>
             </h1>
 
-            <p className="mt-6 max-w-2xl text-base sm:text-lg text-white/60 animate-fade-in" style={{ animationDelay: '200ms' }}>
-              100+ designers. Zero inventory risk. Preorder, produce, ship.
-              The multi-designer platform built for the culture.
+            <p className="mt-6 max-w-xl text-base leading-7 text-white/60 animate-fade-in" style={{ animationDelay: '200ms' }}>
+              Discover limited drops from Africa&apos;s most original designers.
+              Every order funds the next piece.
             </p>
 
             <div className="mt-8 flex flex-col sm:flex-row items-center gap-3 animate-fade-in" style={{ animationDelay: '300ms' }}>
@@ -113,6 +114,16 @@ export default async function Home() {
         </div>
       </section>
 
+      <section className="mx-auto grid max-w-7xl grid-cols-1 gap-px border-y border-white/10 bg-white/10 sm:grid-cols-3">
+        {[['01', 'Discover', 'Original drops from independent designers.'], ['02', 'Preorder', 'Your order unlocks the production run.'], ['03', 'Receive', 'Tracked delivery from studio to doorstep.']].map(([number, title, body]) => (
+          <div key={number} className="bg-black px-5 py-6 sm:px-8">
+            <div className="mb-5 flex items-center justify-between text-xs font-bold text-white/35"><span>{number}</span><span className="h-px w-10 bg-lime/60" /></div>
+            <h2 className="font-display text-xl text-white">{title}</h2>
+            <p className="mt-2 max-w-xs text-sm leading-6 text-white/45">{body}</p>
+          </div>
+        ))}
+      </section>
+
       {/* Marquee */}
       <div className="relative overflow-hidden border-y border-white/10 bg-card/30 py-3">
         <div className="flex whitespace-nowrap marquee">
@@ -131,14 +142,22 @@ export default async function Home() {
 
       {/* Feed */}
       <section id="feed" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
-        <div className="flex items-center justify-between mb-8">
+        <div className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.22em] text-lime">The edit</p>
             <h2 className="font-display text-3xl sm:text-4xl font-black tracking-tighter text-white">
               LIVE DROPS
             </h2>
-            <p className="text-sm text-white/50 mt-1">
-              {showDemos ? 'Demo drops — be the first to launch' : `${liveDrops.length} drops live right now`}
+            <p className="mt-1 text-sm text-white/50">
+              {showDemos ? 'Small-batch pieces, made when you order.' : `${liveDrops.length} drops live right now`}
             </p>
+          </div>
+          <div className="scrollbar-hide flex max-w-full gap-2 overflow-x-auto pb-1" aria-label="Drop categories">
+            {['ALL DROPS', 'CLOTHING', 'ACCESSORIES'].map((filter, index) => (
+              <button key={filter} className={`min-h-11 shrink-0 rounded-full px-4 text-xs font-bold transition-colors ${index === 0 ? 'bg-white text-black' : 'border border-white/15 text-white/60 hover:border-lime hover:text-lime'}`}>
+                {filter}
+              </button>
+            ))}
           </div>
         </div>
 
