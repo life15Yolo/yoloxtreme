@@ -19,7 +19,9 @@ export type Drop = {
   price: number;
   max_qty: number;
   current_qty: number;
-  status: 'live' | 'funded' | 'producing' | 'shipped';
+  status: 'pending_review' | 'live' | 'funded' | 'producing' | 'shipped';
+  approved_by?: string | null;
+  approved_at?: string | null;
   countdown_end: string | null;
   images: string[];
   sizes: string[];
