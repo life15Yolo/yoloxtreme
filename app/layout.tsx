@@ -22,16 +22,16 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://yoloxtreme.tech'),
   title: 'YOLOXTREME — The Preorder Factory',
   description:
-    '100+ designers. No inventory risk. Preorder, produce, ship. The multi-designer preorder platform.',
+    'You only live once. Launch the drop. Live the potential.',
   openGraph: {
     title: 'YOLOXTREME — The Preorder Factory',
-    description: '100+ designers. No inventory risk. Preorder → Produce → Ship.',
+    description: 'You only live once. Launch the drop. Live the potential.',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'YOLOXTREME — The Preorder Factory',
-    description: '100+ designers. No inventory risk. Preorder → Produce → Ship.',
+    description: 'You only live once. Launch the drop. Live the potential.',
   },
 };
 
@@ -41,7 +41,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <body className={`${inter.variable} ${archivo.variable} font-sans antialiased`}>
         <AuthProvider>{children}</AuthProvider>
         <SpeedInsights />

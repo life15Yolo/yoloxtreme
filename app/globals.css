@@ -4,20 +4,20 @@
 
 @layer base {
   :root {
-    --background: 0 0% 4%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 7%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 7%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 73 100% 50%;
-    --primary-foreground: 0 0% 0%;
-    --secondary: 0 0% 14%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 12%;
-    --muted-foreground: 0 0% 55%;
-    --accent: 73 100% 50%;
-    --accent-foreground: 0 0% 0%;
+    --background: 40 33% 97%;
+    --foreground: 0 0% 7%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 7%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 7%;
+    --primary: 71 100% 50%;
+    --primary-foreground: 0 0% 7%;
+    --secondary: 40 20% 94%;
+    --secondary-foreground: 0 0% 7%;
+    --muted: 40 20% 94%;
+    --muted-foreground: 0 0% 35%;
+    --accent: 71 100% 50%;
+    --accent-foreground: 0 0% 7%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 16%;
@@ -32,7 +32,8 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    background-color: #FAF8F4;
+    color: #111111;
     font-feature-settings: "ss01", "cv01";
   }
 }
@@ -44,15 +45,15 @@
   }
 
   .text-lime {
-    color: hsl(73 100% 50%);
+    color: #D2FF00;
   }
 
   .bg-lime {
-    background-color: hsl(73 100% 50%);
+    background-color: #D2FF00;
   }
 
   .border-lime {
-    border-color: hsl(73 100% 50%);
+    border-color: #D2FF00;
   }
 
   .scrollbar-hide {
