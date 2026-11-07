@@ -1,4 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.58.0';
+import { assessVerifiedCharge } from '../_shared/payment-guard.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -75,8 +76,6 @@ Deno.serve(async (req: Request) => {
       const buyerName = metadata?.buyer_name || '';
       const buyerPhone = metadata?.buyer_phone || '';
       const size = metadata?.size || '';
-      const quantity = metadata?.quantity || 1;
-      const amount = verifyData.data.amount;
       const reference = verifyData.data.reference;
 
       if (!dropId) {
@@ -99,14 +98,32 @@ Deno.serve(async (req: Request) => {
         );
       }
 
+      const { data: drop } = await supabase
+        .from('drops')
+        .select('id, status, price')
+        .eq('id', dropId)
+        .maybeSingle();
+
+      const charge = assessVerifiedCharge({
+        drop: drop ? { status: drop.status, price: Number(drop.price) } : null,
+        quantity: metadata?.quantity,
+        amount: verifyData.data.amount,
+      });
+      if (!charge.ok) {
+        return new Response(
+          JSON.stringify({ error: charge.error }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
       const { error: orderError } = await supabase.from('preorders').insert({
         drop_id: dropId,
         buyer_email: buyerEmail,
         buyer_name: buyerName,
         buyer_phone: buyerPhone || null,
         size,
-        quantity,
-        amount,
+        quantity: charge.quantity,
+        amount: charge.amount,
         paystack_ref: reference,
         status: 'paid',
       });
@@ -114,7 +131,7 @@ Deno.serve(async (req: Request) => {
       if (orderError) throw orderError;
 
       const { error: rpcError } = await supabase
-        .rpc('increment_drop_qty', { target_drop_id: dropId, qty: quantity });
+        .rpc('increment_drop_qty', { target_drop_id: dropId, qty: charge.quantity });
 
       if (rpcError) throw rpcError;
     }

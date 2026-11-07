@@ -57,9 +57,11 @@ const config: Config = {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
+        ivory: '#FAF8F4',
+        ink: '#111111',
         lime: {
-          DEFAULT: 'hsl(73 100% 50%)',
-          dark: 'hsl(73 100% 40%)',
+          DEFAULT: '#D2FF00',
+          dark: '#b6df00',
         },
         chart: {
           '1': 'hsl(73 100% 50%)',
