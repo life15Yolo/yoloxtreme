@@ -120,7 +120,8 @@ test('static: app, pay function, and migration keep the review boundary', () => 
   assert.equal(guard, edgeGuard);
   assert.match(newDrop, /buildDropInsert/);
   assert.doesNotMatch(newDrop, /status:\s*'live'/);
-  assert.match(onboard, /verified:\s*false/);
+  assert.match(source('lib/designer-profile.ts'), /verified:\s*false/);
+  assert.match(onboard, /buildDesignerSignupInsert/);
 
   const paystackAt = pay.indexOf('api.paystack.co');
   const guardAt = pay.indexOf('evaluateCheckout');

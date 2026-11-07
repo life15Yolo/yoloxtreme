@@ -4,13 +4,14 @@ import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/components/auth-provider';
 import { Navbar } from '@/components/navbar';
-import { LayoutDashboard, PlusCircle, Package, ShoppingCart, LogOut, Loader2 } from 'lucide-react';
+import { LayoutDashboard, PlusCircle, Package, ShoppingCart, Landmark, LogOut, Loader2 } from 'lucide-react';
 
 const navItems = [
   { href: '/dashboard', label: 'Overview', icon: LayoutDashboard },
   { href: '/dashboard/new-drop', label: 'New Drop', icon: PlusCircle },
   { href: '/dashboard/drops', label: 'My Drops', icon: Package },
   { href: '/dashboard/orders', label: 'Orders', icon: ShoppingCart },
+  { href: '/dashboard/payout', label: 'Payout', icon: Landmark },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {

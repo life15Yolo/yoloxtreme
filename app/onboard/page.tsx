@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase/client';
+import { buildDesignerSignupInsert } from '@/lib/designer-profile';
 import { Navbar } from '@/components/navbar';
 import { ArrowRight, Check, Loader2, AlertCircle } from 'lucide-react';
 
@@ -26,8 +27,6 @@ export default function OnboardPage() {
     email: '',
     password: '',
     phone: '',
-    bankName: '',
-    accountNumber: '',
   });
 
   const handleSignIn = async (e: React.FormEvent) => {
@@ -54,8 +53,8 @@ export default function OnboardPage() {
     e.preventDefault();
     setError(null);
 
-    if (!form.brandName || !form.email || !form.password || !form.bankName || !form.accountNumber) {
-      setError('All fields are required');
+    if (!form.brandName || !form.email || !form.password) {
+      setError('Brand name, email, and password are required');
       return;
     }
 
@@ -76,41 +75,12 @@ export default function OnboardPage() {
       if (authError) throw new Error(authError.message);
       if (!authData.user) throw new Error('Failed to create account');
 
-      let subaccountCode: string | null = null;
-      try {
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-        const response = await fetch(`${supabaseUrl}/functions/v1/create-subaccount`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
-          },
-          body: JSON.stringify({
-            brand_name: form.brandName,
-            email: form.email,
-            bank_name: form.bankName,
-            account_number: form.accountNumber,
-          }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          subaccountCode = data.subaccount_code || null;
-        }
-      } catch {
-        // Non-blocking
-      }
-
-      const { error: designerError } = await supabase.from('designers').insert({
+      const { error: designerError } = await supabase.from('designers').insert(buildDesignerSignupInsert({
         id: authData.user.id,
-        brand_name: form.brandName,
+        brandName: form.brandName,
         email: form.email,
         phone: form.phone,
-        bank_name: form.bankName,
-        account_number: form.accountNumber,
-        paystack_subaccount_code: subaccountCode,
-        verified: false,
-      });
+      }));
 
       if (designerError) throw new Error(designerError.message);
 
@@ -151,7 +121,7 @@ export default function OnboardPage() {
           <p className="mt-3 text-ink/70">
             {mode === 'sign-in'
               ? 'Use the email and password on your designer account.'
-              : 'Create a designer profile. Drops you submit stay pending until an admin approves them.'}
+              : 'Create a designer profile. Bank details are not part of signup. Drops you submit stay pending until an admin approves them.'}
           </p>
         </div>
         {error && (
@@ -179,18 +149,7 @@ export default function OnboardPage() {
             <label className="block text-xs font-bold uppercase tracking-wider text-ink/70 mb-2">Phone</label>
             <input type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+234 800 000 0000" className="w-full rounded-2xl border border-ink/15 bg-white px-5 py-3.5 text-ink placeholder:text-ink/40 outline-none transition-all focus:border-lime focus:ring-2 focus:ring-lime/20" />
           </div>}
-          {mode === 'join' && <div className="rounded-2xl border border-ink/10 bg-white p-5 space-y-4">
-            <p className="text-xs font-bold uppercase tracking-wider text-ink">Payout details</p>
-            <p className="text-sm leading-6 text-ink/70">The target split is 90% to the designer and 10% to the platform after a buyer confirms compliant delivery. The buyer pays the processing fee on top. This build records the bank details and does not release that payout automatically.</p>
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-ink/70 mb-2">Bank Name</label>
-              <input type="text" value={form.bankName} onChange={(e) => setForm({ ...form, bankName: e.target.value })} placeholder="e.g. GTBank" className="w-full rounded-2xl border border-ink/15 bg-ivory px-5 py-3.5 text-ink placeholder:text-ink/40 outline-none transition-all focus:border-lime focus:ring-2 focus:ring-lime/20" required />
-            </div>
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-ink/70 mb-2">Account Number</label>
-              <input type="text" value={form.accountNumber} onChange={(e) => setForm({ ...form, accountNumber: e.target.value })} placeholder="0123456789" maxLength={10} className="w-full rounded-2xl border border-ink/15 bg-ivory px-5 py-3.5 text-ink placeholder:text-ink/40 outline-none transition-all focus:border-lime focus:ring-2 focus:ring-lime/20" required />
-            </div>
-          </div>}
+          {mode === 'join' && <p className="text-sm leading-6 text-ink/70">Payout account details are optional. You can add them later in your private dashboard. Signup does not send anything to a payment provider.</p>}
           <button type="submit" disabled={loading} className="group flex w-full items-center justify-center gap-2 rounded-full bg-lime px-6 py-4 text-sm font-bold text-ink transition-all hover:scale-[1.02] glow-lime disabled:opacity-50 disabled:hover:scale-100">
             {loading ? (<><Loader2 className="h-5 w-5 animate-spin" />{mode === 'sign-in' ? 'SIGNING IN...' : 'CREATING YOUR ACCOUNT...'}</>) : mode === 'sign-in' ? 'SIGN IN' : (<>JOIN YOLOXTREME<ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" /></>)}
           </button>

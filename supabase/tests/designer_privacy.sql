@@ -115,5 +115,65 @@ BEGIN
 END $$;
 
 RESET ROLE;
+
+INSERT INTO auth.users (id, email)
+VALUES ('77777777-7777-4777-8777-777777777777', 'nobank@example.com');
+SELECT set_config('request.jwt.claim.sub', '77777777-7777-4777-8777-777777777777', true);
+SET LOCAL ROLE authenticated;
+
+DO $$
+DECLARE
+  bank text;
+  account text;
+BEGIN
+  INSERT INTO public.designers (id, brand_name, email)
+  VALUES ('77777777-7777-4777-8777-777777777777', 'No Bank Brand', 'nobank@example.com');
+
+  SELECT bank_name, account_number INTO bank, account
+  FROM public.designers
+  WHERE id = auth.uid();
+  IF bank IS NOT NULL OR account IS NOT NULL THEN
+    RAISE EXCEPTION 'signup without bank fields stored payout data';
+  END IF;
+END $$;
+
+RESET ROLE;
+SELECT set_config('request.jwt.claim.sub', '66666666-6666-4666-8666-666666666666', true);
+SET LOCAL ROLE authenticated;
+
+DO $$
+BEGIN
+  BEGIN
+    UPDATE public.designers
+    SET bank_name = 'Stolen Bank', account_number = '1111111111'
+    WHERE id = '77777777-7777-4777-8777-777777777777';
+    IF FOUND THEN
+      RAISE EXCEPTION 'other user updated payout details';
+    END IF;
+  EXCEPTION
+    WHEN insufficient_privilege THEN
+      NULL;
+    WHEN OTHERS THEN
+      IF SQLERRM ILIKE '%other user updated payout details%' THEN
+        RAISE;
+      END IF;
+  END;
+
+END $$;
+
+RESET ROLE;
+
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM public.designers
+    WHERE id = '77777777-7777-4777-8777-777777777777'
+      AND bank_name IS NOT NULL
+  ) THEN
+    RAISE EXCEPTION 'other user changed a private payout account';
+  END IF;
+END $$;
+
+RESET ROLE;
 SELECT 'designer privacy sql checks passed' AS result;
 ROLLBACK;

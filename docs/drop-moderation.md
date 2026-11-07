@@ -34,6 +34,8 @@ Real checkout is closed. `PAYMENTS_MODE` is unset by default. The pay function r
 
 There is no automatic Paystack subaccount split. The business target remains 90% to the designer and 10% to the platform after the buyer confirms compliant delivery, with the processing fee paid by the buyer on top. That release is not implemented. Do not treat a Paystack charge as a completed payout.
 
+Public signup does not collect a bank name, account number, or any banking password. Those columns stay nullable, so existing designer rows are unchanged. An owner can optionally save a bank name and 10-digit account number at `/dashboard/payout`. That update writes only those two columns on the signed-in designer's row. It does not call Paystack, does not create a subaccount, and does not mark the account verified. `create-subaccount` now refuses every request before any provider call. Provider verification of the account number is deferred.
+
 ## Designer privacy
 
 Migration `supabase/migrations/20261107094500_designer_public_profile.sql` removes anonymous access to the `designers` table and limits authenticated reads to the signed-in designer's own row. Public brand name and verification flag come from `designers_public`. Bank name, account number, payout code, email, and phone are not in that view. Owners can still save and read their own bank details. Apply this migration after the pending-review migration. Do not run it against production from this pull request.
