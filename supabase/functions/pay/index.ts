@@ -1,4 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2.58.0';
+import { evaluateCheckout } from '../_shared/checkout-guard.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -38,17 +39,17 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    if (drop.status !== 'live') {
+    // Direct calls are refused for every non-live status, including pending_review,
+    // before Paystack is contacted. Live drops keep the stock and split checks below.
+    const checkout = evaluateCheckout({
+      status: drop.status,
+      current_qty: drop.current_qty,
+      max_qty: drop.max_qty,
+    });
+    if (!checkout.ok) {
       return new Response(
-        JSON.stringify({ error: 'This drop is no longer live' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    if (drop.current_qty >= drop.max_qty) {
-      return new Response(
-        JSON.stringify({ error: 'Drop is fully subscribed' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: checkout.error }),
+        { status: checkout.httpStatus, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 

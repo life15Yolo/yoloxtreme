@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { supabase } from '@/lib/supabase/client';
 import type { DropWithDesigner } from '@/lib/types';
 import { formatNaira, timeLeft } from '@/lib/utils';
+import { evaluateCheckout } from '@/lib/checkout-guard';
 import { Navbar } from '@/components/navbar';
 import { PLACEHOLDER_IMAGES } from '@/components/drop-card';
 import { Clock, TrendingUp, Package, Check, Loader2, AlertCircle, MessageCircle, ArrowLeft, Zap } from 'lucide-react';
@@ -46,6 +47,9 @@ export default function DropPage() {
   const handlePreorder = async () => {
     setError(null);
     if (!drop) return;
+    const gate = evaluateCheckout({ status: drop.status, current_qty: drop.current_qty, max_qty: drop.max_qty });
+    if (!gate.ok) { setError(gate.error); return; }
+    if (drop.countdown_end && timeLeft(drop.countdown_end).expired) { setError('This drop is no longer live'); return; }
     if (!buyerEmail) { setError('Enter your email to continue'); return; }
     if (drop.sizes?.length > 0 && !selectedSize) { setError('Select a size'); return; }
     setPaying(true);
@@ -69,6 +73,8 @@ export default function DropPage() {
   const images = drop.images?.length > 0 ? drop.images : [PLACEHOLDER_IMAGES[0]];
   const isLive = drop.status === 'live' && !countdown.expired;
   const soldOut = drop.current_qty >= drop.max_qty;
+  const checkout = evaluateCheckout({ status: drop.status, current_qty: drop.current_qty, max_qty: drop.max_qty });
+  const canOrder = checkout.ok && !countdown.expired;
 
   return (
     <div className="min-h-screen bg-black">
@@ -88,6 +94,7 @@ export default function DropPage() {
               <p className="text-sm font-bold uppercase tracking-wider text-lime">{drop.designer?.brand_name}</p>
               <h1 className="mt-1 font-display text-4xl sm:text-5xl font-black tracking-tighter text-white">{drop.title}</h1>
               {drop.designer?.verified && (<div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-white/5 px-3 py-1 text-xs text-white/60"><Check className="h-3 w-3 text-lime" />Verified Designer</div>)}
+              {drop.status === 'pending_review' && (<div className="mt-4 rounded-2xl border border-amber-300/30 bg-amber-300/10 p-4 text-sm text-amber-100">This drop is awaiting review. Preorders are closed until it is approved.</div>)}
             </div>
             <div className="font-display text-3xl font-black text-white">{formatNaira(drop.price)}</div>
             {drop.countdown_end && !countdown.expired && (
@@ -118,7 +125,7 @@ export default function DropPage() {
               <input type="tel" value={buyerPhone} onChange={(e) => setBuyerPhone(e.target.value)} placeholder="Phone (for delivery)" className="w-full rounded-2xl border border-white/15 bg-card px-5 py-3.5 text-white placeholder:text-white/30 outline-none transition-all focus:border-lime focus:ring-2 focus:ring-lime/20" />
             </div>
             {error && (<div className="flex items-center gap-3 rounded-2xl border border-red-500/30 bg-red-500/10 p-4"><AlertCircle className="h-5 w-5 text-red-500 shrink-0" /><p className="text-sm text-red-200">{error}</p></div>)}
-            <button onClick={handlePreorder} disabled={paying || soldOut || !isLive} className="group flex w-full items-center justify-center gap-2 rounded-full bg-lime px-6 py-4 text-base font-bold text-black transition-all hover:scale-[1.02] glow-lime disabled:opacity-40 disabled:hover:scale-100">{paying ? (<><Loader2 className="h-5 w-5 animate-spin" />INITIALIZING PAYMENT...</>) : soldOut ? ('SOLD OUT') : !isLive ? ('DROP ENDED') : (<><Zap className="h-5 w-5" fill="black" />PREORDER NOW · {formatNaira(drop.price * quantity)}</>)}</button>
+            <button onClick={handlePreorder} disabled={paying || soldOut || !canOrder} className="group flex w-full items-center justify-center gap-2 rounded-full bg-lime px-6 py-4 text-base font-bold text-black transition-all hover:scale-[1.02] glow-lime disabled:opacity-40 disabled:hover:scale-100">{paying ? (<><Loader2 className="h-5 w-5 animate-spin" />INITIALIZING PAYMENT...</>) : soldOut ? ('SOLD OUT') : drop.status === 'pending_review' ? ('PENDING REVIEW') : !canOrder ? ('DROP ENDED') : (<><Zap className="h-5 w-5" fill="black" />PREORDER NOW · {formatNaira(drop.price * quantity)}</>)}</button>
             <Link href={`/d/${drop.slug}/room`} className="flex items-center justify-between rounded-2xl border border-white/10 bg-card p-4 transition-all hover:border-lime/30"><div className="flex items-center gap-3"><MessageCircle className="h-5 w-5 text-lime" /><div><p className="font-semibold text-white">Join the Room</p><p className="text-xs text-white/40">Discuss, review, ask questions</p></div></div><span className="text-lime font-bold">→</span></Link>
           </div>
         </div>
