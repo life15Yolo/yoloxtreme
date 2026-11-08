@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/auth-provider';
 import { supabase } from '@/lib/supabase/client';
 import { slugify, formatNaira } from '@/lib/utils';
+import { buildDropInsert } from '@/lib/new-drop';
 import { Loader2, Check, AlertCircle, Plus, X, Image as ImageIcon } from 'lucide-react';
 
 export default function NewDropPage() {
@@ -50,18 +51,18 @@ export default function NewDropPage() {
       const { data: existing } = await supabase.from('drops').select('id').eq('slug', slug).maybeSingle();
       const finalSlug = existing ? `${slug}-${Date.now().toString(36)}` : slug;
       const priceKobo = Math.round(parseFloat(form.price) * 100);
-      const { data: drop, error: insertError } = await supabase.from('drops').insert({ designer_id: designer.id, slug: finalSlug, title: form.title, description: form.description, price: priceKobo, max_qty: parseInt(form.maxQty) || 100, current_qty: 0, status: 'live', countdown_end: form.countdownDate ? new Date(form.countdownDate).toISOString() : null, images: imageUrls, sizes: form.sizes.split(',').map((s) => s.trim()).filter(Boolean) }).select().single();
+      const { error: insertError } = await supabase.from('drops').insert(buildDropInsert({ designer_id: designer.id, slug: finalSlug, title: form.title, description: form.description, price: priceKobo, max_qty: parseInt(form.maxQty) || 100, countdown_end: form.countdownDate ? new Date(form.countdownDate).toISOString() : null, images: imageUrls, sizes: form.sizes.split(',').map((s) => s.trim()).filter(Boolean) })).select().single();
       if (insertError) throw insertError;
       setSuccess(true);
-      setTimeout(() => router.push(`/d/${finalSlug}`), 1500);
+      setTimeout(() => router.push('/dashboard/drops'), 1500);
     } catch (err) { setError(err instanceof Error ? err.message : 'Failed to create drop'); } finally { setLoading(false); }
   };
 
-  if (success) return (<div className="rounded-3xl border border-lime/30 bg-lime/10 p-8 text-center animate-scale-in"><div className="flex h-16 w-16 mx-auto items-center justify-center rounded-full bg-lime"><Check className="h-8 w-8 text-black" strokeWidth={3} /></div><h3 className="mt-4 font-display text-2xl font-black text-white">DROP IS LIVE!</h3><p className="mt-2 text-white/60">Redirecting to your drop page...</p></div>);
+  if (success) return (<div className="rounded-3xl border border-amber-300/30 bg-amber-300/10 p-8 text-center animate-scale-in"><div className="flex h-16 w-16 mx-auto items-center justify-center rounded-full bg-amber-300"><Check className="h-8 w-8 text-black" strokeWidth={3} /></div><h3 className="mt-4 font-display text-2xl font-black text-white">SUBMITTED FOR REVIEW</h3><p className="mt-2 text-white/60">Checkout stays closed until an admin approves this drop. Redirecting to your drops...</p></div>);
 
   return (
     <div className="space-y-5">
-      <h2 className="font-display text-2xl font-black tracking-tighter text-white">Create New Drop</h2>
+      <div><h2 className="font-display text-2xl font-black tracking-tighter text-white">Create New Drop</h2><p className="mt-2 text-sm text-white/50">New drops are submitted for review. Buyers cannot preorder until an admin publishes the drop.</p></div>
       {error && (<div className="flex items-center gap-3 rounded-2xl border border-red-500/30 bg-red-500/10 p-4"><AlertCircle className="h-5 w-5 text-red-500 shrink-0" /><p className="text-sm text-red-200">{error}</p></div>)}
       <form onSubmit={handleSubmit} className="space-y-5">
         <div><label className="block text-xs font-bold uppercase tracking-wider text-white/60 mb-2">Drop Title</label><input type="text" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="e.g. ASH HOODIE VOL.1" className="w-full rounded-2xl border border-white/15 bg-card px-5 py-3.5 text-white placeholder:text-white/30 outline-none transition-all focus:border-lime focus:ring-2 focus:ring-lime/20" required />{form.title && (<p className="mt-2 text-xs text-white/40">URL: /d/{slugify(form.title)}</p>)}</div>
@@ -73,7 +74,7 @@ export default function NewDropPage() {
         <div><label className="block text-xs font-bold uppercase tracking-wider text-white/60 mb-2">Available Sizes (comma-separated)</label><input type="text" value={form.sizes} onChange={(e) => setForm({ ...form, sizes: e.target.value })} placeholder="S, M, L, XL" className="w-full rounded-2xl border border-white/15 bg-card px-5 py-3.5 text-white placeholder:text-white/30 outline-none transition-all focus:border-lime focus:ring-2 focus:ring-lime/20" /></div>
         <div><label className="block text-xs font-bold uppercase tracking-wider text-white/60 mb-2">Countdown End Date</label><input type="datetime-local" value={form.countdownDate} onChange={(e) => setForm({ ...form, countdownDate: e.target.value })} className="w-full rounded-2xl border border-white/15 bg-card px-5 py-3.5 text-white outline-none transition-all focus:border-lime focus:ring-2 focus:ring-lime/20 [color-scheme:dark]" /></div>
         <div><label className="block text-xs font-bold uppercase tracking-wider text-white/60 mb-2">Drop Images (up to 3)</label><div className="grid grid-cols-3 gap-3">{imageUrls.map((url, i) => (<div key={i} className="relative aspect-square rounded-2xl border border-white/15 overflow-hidden group"><img src={url} alt={`Upload ${i + 1}`} className="h-full w-full object-cover" /><button type="button" onClick={() => removeImage(i)} className="absolute top-2 right-2 rounded-full bg-black/70 p-1.5 text-white opacity-0 group-hover:opacity-100 transition-opacity"><X className="h-4 w-4" /></button></div>))}{imageUrls.length < 3 && (<label className="flex aspect-square cursor-pointer items-center justify-center rounded-2xl border-2 border-dashed border-white/15 bg-card transition-all hover:border-lime/40"><div className="text-center">{uploading ? (<Loader2 className="h-6 w-6 text-lime animate-spin mx-auto" />) : (<><ImageIcon className="h-6 w-6 text-white/30 mx-auto mb-1" /><span className="text-xs text-white/30">Upload</span></>)}</div><input type="file" accept="image/*" multiple onChange={handleImageUpload} className="hidden" disabled={uploading} /></label>)}</div></div>
-        <button type="submit" disabled={loading} className="group flex w-full items-center justify-center gap-2 rounded-full bg-lime px-6 py-4 text-sm font-bold text-black transition-all hover:scale-[1.02] glow-lime disabled:opacity-50">{loading ? (<><Loader2 className="h-5 w-5 animate-spin" />LAUNCHING DROP...</>) : (<><Plus className="h-5 w-5" />LAUNCH DROP</>)}</button>
+        <button type="submit" disabled={loading} className="group flex w-full items-center justify-center gap-2 rounded-full bg-lime px-6 py-4 text-sm font-bold text-black transition-all hover:scale-[1.02] glow-lime disabled:opacity-50">{loading ? (<><Loader2 className="h-5 w-5 animate-spin" />SUBMITTING...</>) : (<><Plus className="h-5 w-5" />SUBMIT FOR REVIEW</>)}</button>
       </form>
     </div>
   );

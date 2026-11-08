@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useAuth } from '@/components/auth-provider';
 import { supabase } from '@/lib/supabase/client';
 import { formatNaira } from '@/lib/utils';
+import { dropStatusBadgeClass, dropStatusLabel } from '@/lib/drop-status';
 import { TrendingUp, Package, ShoppingCart, PlusCircle, ArrowRight } from 'lucide-react';
 
 type Stats = { totalRevenue: number; activeDrops: number; totalPreorders: number };
@@ -41,11 +42,11 @@ export default function DashboardHome() {
         {statCards.map((stat) => (<div key={stat.label} className="rounded-3xl border border-white/10 bg-card p-5"><div className="flex items-center justify-between mb-3"><stat.icon className={`h-5 w-5 ${stat.color}`} /></div><div className="font-display text-2xl font-black text-white">{stat.value}</div><div className="text-xs text-white/40 mt-1">{stat.label}</div></div>))}
       </div>
       <div className="rounded-3xl border border-lime/20 bg-gradient-to-br from-lime/10 to-card p-6">
-        <div className="flex items-center justify-between"><div><h3 className="font-display text-xl font-black text-white">Launch a new drop</h3><p className="text-sm text-white/50 mt-1">Set price, quantity, countdown. Go live instantly.</p></div><Link href="/dashboard/new-drop" className="flex items-center gap-2 rounded-full bg-lime px-5 py-3 text-sm font-bold text-black transition-all hover:scale-105 glow-lime"><PlusCircle className="h-4 w-4" />NEW DROP</Link></div>
+        <div className="flex items-center justify-between"><div><h3 className="font-display text-xl font-black text-white">Launch a new drop</h3><p className="text-sm text-white/50 mt-1">Set price, quantity, and countdown. New drops stay pending until review.</p></div><Link href="/dashboard/new-drop" className="flex items-center gap-2 rounded-full bg-lime px-5 py-3 text-sm font-bold text-black transition-all hover:scale-105 glow-lime"><PlusCircle className="h-4 w-4" />NEW DROP</Link></div>
       </div>
       <div className="rounded-3xl border border-white/10 bg-card p-6">
         <h3 className="font-display text-lg font-black text-white mb-4">Recent Drops</h3>
-        {recentDrops.length === 0 ? (<div className="text-center py-8"><p className="text-white/40 mb-4">No drops yet. Launch your first one.</p><Link href="/dashboard/new-drop" className="inline-flex items-center gap-2 text-sm font-semibold text-lime">Create a drop <ArrowRight className="h-4 w-4" /></Link></div>) : (<div className="space-y-3">{recentDrops.map((drop) => (<Link key={drop.id} href={`/dashboard/drops`} className="flex items-center justify-between rounded-2xl border border-white/10 bg-background p-4 transition-all hover:border-lime/30"><div><p className="font-semibold text-white">{drop.title}</p><p className="text-xs text-white/40">{drop.current_qty}/{drop.max_qty} preordered</p></div><span className={`rounded-full px-3 py-1 text-xs font-bold uppercase ${drop.status === 'live' ? 'bg-lime text-black' : 'bg-white/10 text-white/60'}`}>{drop.status}</span></Link>))}</div>)}
+        {recentDrops.length === 0 ? (<div className="text-center py-8"><p className="text-white/40 mb-4">No drops yet. Launch your first one.</p><Link href="/dashboard/new-drop" className="inline-flex items-center gap-2 text-sm font-semibold text-lime">Create a drop <ArrowRight className="h-4 w-4" /></Link></div>) : (<div className="space-y-3">{recentDrops.map((drop) => (<Link key={drop.id} href={`/dashboard/drops`} className="flex items-center justify-between rounded-2xl border border-white/10 bg-background p-4 transition-all hover:border-lime/30"><div><p className="font-semibold text-white">{drop.title}</p><p className="text-xs text-white/40">{drop.current_qty}/{drop.max_qty} preordered</p></div><span className={`rounded-full px-3 py-1 text-xs font-bold uppercase ${dropStatusBadgeClass(drop.status)}`}>{dropStatusLabel(drop.status)}</span></Link>))}</div>)}
       </div>
     </div>
   );
