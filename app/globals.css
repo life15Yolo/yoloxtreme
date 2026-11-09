@@ -31,10 +31,24 @@
   * {
     @apply border-border;
   }
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     background-color: #FAF8F4;
     color: #111111;
     font-feature-settings: "ss01", "cv01";
+  }
+
+  :focus-visible {
+    outline: 3px solid #D2FF00;
+    outline-offset: 3px;
+  }
+
+  ::selection {
+    background: #D2FF00;
+    color: #111111;
   }
 }
 

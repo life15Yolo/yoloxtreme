@@ -18,6 +18,13 @@ const archivo = Archivo({
   display: 'swap',
 });
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: '#FAF8F4',
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL('https://yoloxtreme.tech'),
   title: 'YOLOXTREME — The Preorder Factory',

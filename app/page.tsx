@@ -52,22 +52,39 @@ export default async function Home() {
     <div className="min-h-screen bg-ivory text-ink">
       <Navbar />
       <main>
-        <section className="mx-auto max-w-7xl px-4 pb-16 pt-10 sm:px-6 sm:pt-16 lg:px-8">
-          <p className="text-xs font-bold uppercase tracking-[0.22em] text-ink/50">YoloXtreme</p>
-          <h1 className="mt-4 max-w-5xl font-display text-6xl font-black leading-[0.86] tracking-tighter text-ink sm:text-8xl">
-            THE PREORDER FACTORY
-          </h1>
-          <p className="mt-6 max-w-xl text-lg leading-8 text-ink/80">
-            You only live once. Launch the drop. Live the potential.
-          </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Link href="#feed" className="inline-flex items-center justify-center gap-2 rounded-full bg-lime px-6 py-3 text-sm font-bold text-ink">
-              Browse drops
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link href="/onboard" className="inline-flex items-center justify-center rounded-full border border-ink px-6 py-3 text-sm font-bold text-ink">
-              Launch drop
-            </Link>
+        <section className="relative overflow-hidden border-b border-ink/10">
+          <div className="mx-auto grid max-w-7xl gap-12 px-4 pb-20 pt-12 sm:px-6 sm:pb-24 sm:pt-20 lg:grid-cols-[1.15fr_0.85fr] lg:items-end lg:px-8">
+            <div>
+              <div className="mb-6 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.22em] text-ink/50">
+                <span className="size-2 rounded-full bg-lime" aria-hidden="true" /> Independent fashion, on demand
+              </div>
+              <h1 className="max-w-5xl font-display text-[clamp(3.8rem,12vw,9.5rem)] font-black leading-[0.82] tracking-[-0.07em] text-ink">
+                THE<br /><span className="text-ink/35">PREORDER</span><br />FACTORY
+              </h1>
+              <p className="mt-8 max-w-xl text-base leading-7 text-ink/70 sm:text-lg">
+                A focused home for independent designers to turn a strong idea into a real product — with demand validated before production begins.
+              </p>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Link href="#feed" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-lime px-6 py-3 text-sm font-bold text-ink transition-transform hover:-translate-y-0.5">
+                  Explore live drops <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </Link>
+                <Link href="/onboard" className="inline-flex min-h-12 items-center justify-center rounded-full border border-ink/20 px-6 py-3 text-sm font-bold text-ink transition-colors hover:bg-ink hover:text-ivory">
+                  Launch your idea
+                </Link>
+              </div>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+              <div className="rounded-[1.75rem] bg-ink p-6 text-ivory sm:p-7">
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-ivory/45">The model</p>
+                <p className="mt-10 font-display text-3xl font-black leading-none tracking-tight">Demand first.<br />Waste less.</p>
+                <p className="mt-5 text-sm leading-6 text-ivory/65">Every live drop has a clear target, price, and production path.</p>
+              </div>
+              <div className="rounded-[1.75rem] border border-ink/10 bg-white p-6 sm:p-7">
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-ink/45">For everyone</p>
+                <p className="mt-10 font-display text-3xl font-black leading-none tracking-tight">Make it.<br />Wear it.</p>
+                <p className="mt-5 text-sm leading-6 text-ink/60">Discover original work and support the people making it.</p>
+              </div>
+            </div>
           </div>
         </section>
 
