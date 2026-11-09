@@ -88,4 +88,12 @@
   .glow-lime-hover:hover {
     box-shadow: 0 0 30px hsl(73 100% 50% / 0.5);
   }
+
+  .eyebrow {
+    @apply text-xs font-bold uppercase tracking-[0.2em] text-gray-500;
+  }
+
+  .section-title {
+    @apply mt-3 font-display text-3xl font-black leading-[0.95] tracking-[-0.05em] text-ink;
+  }
 }
